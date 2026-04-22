@@ -5,11 +5,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{font-family:Arial;background:#0b1220;color:white;}
-.container{padding:20px;}
-.card{background:#1f2937;padding:20px;border-radius:10px;}
-input{width:100%;padding:10px;margin-top:10px;}
-.btn{padding:10px;background:#22c55e;border:none;color:white;margin-top:10px;}
+body{
+font-family:Arial;
+background:#0b1220;
+color:white;
+}
+
+.container{
+padding:20px;
+max-width:600px;
+margin:auto;
+}
+
+.card{
+background:#1f2937;
+padding:20px;
+border-radius:10px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:6px;
+border:none;
+}
+
+.btn{
+padding:10px;
+background:#22c55e;
+border:none;
+color:white;
+margin-top:10px;
+cursor:pointer;
+border-radius:6px;
+}
 </style>
 </head>
 
@@ -34,10 +64,13 @@ input{width:100%;padding:10px;margin-top:10px;}
 
 <script>
 
+const dbURL = "https://medsphere-c794d-default-rtdb.firebaseio.com";
+
+// SAVE TO FIREBASE (FIXED)
 function save(){
 
-fetch("https://YOUR-FIREBASE-PROJECT.firebaseio.com/files.json", {
-    method:"PATCH",
+fetch(dbURL + "/files.json", {
+    method: "PATCH",
     body: JSON.stringify({
         pq: document.getElementById("pq").value,
         ms: document.getElementById("ms").value
