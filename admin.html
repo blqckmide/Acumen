@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {font-family:Arial;background:#0b1220;color:white;margin:0;}
+.container {padding:20px;max-width:800px;margin:auto;}
+.card {background:#1f2937;padding:20px;border-radius:10px;margin-top:20px;}
+input {width:100%;padding:10px;margin-top:10px;border-radius:6px;border:none;}
+.btn {padding:10px 15px;background:#22c55e;border:none;color:white;border-radius:6px;margin-top:10px;cursor:pointer;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🛠 Admin Panel</h2>
+
+<div class="card">
+<h3>Upload / Update PDFs</h3>
+
+<input id="pq" placeholder="Past Questions PDF Link">
+<input id="ms" placeholder="Mastery Series PDF Link">
+
+<button class="btn" onclick="save()">Save</button>
+</div>
+
+</div>
+
+<script>
+
+function save() {
+    localStorage.setItem("pq", document.getElementById("pq").value);
+    localStorage.setItem("ms", document.getElementById("ms").value);
+
+    alert("Saved successfully!");
+}
+
+</script>
+
+</body>
+</html>
