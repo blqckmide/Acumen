@@ -7,9 +7,9 @@
 <style>
 body{font-family:Arial;background:#0b1220;color:white;}
 .container{padding:20px;}
+.card{background:#1f2937;padding:20px;border-radius:10px;}
 input{width:100%;padding:10px;margin-top:10px;}
 .btn{padding:10px;background:#22c55e;border:none;color:white;margin-top:10px;}
-.card{background:#1f2937;padding:20px;border-radius:10px;}
 </style>
 </head>
 
@@ -21,10 +21,10 @@ input{width:100%;padding:10px;margin-top:10px;}
 
 <div class="card">
 
-<p>Paste PDF links below:</p>
+<p>Update PDF Links</p>
 
-<input id="pq" placeholder="Past Questions PDF">
-<input id="ms" placeholder="Mastery Series PDF">
+<input id="pq" placeholder="Past Questions Link">
+<input id="ms" placeholder="Mastery Series Link">
 
 <button class="btn" onclick="save()">Save</button>
 
@@ -35,9 +35,16 @@ input{width:100%;padding:10px;margin-top:10px;}
 <script>
 
 function save(){
-    localStorage.setItem("pq", document.getElementById("pq").value);
-    localStorage.setItem("ms", document.getElementById("ms").value);
-    alert("Saved!");
+
+fetch("https://YOUR-FIREBASE-PROJECT.firebaseio.com/files.json", {
+    method:"PATCH",
+    body: JSON.stringify({
+        pq: document.getElementById("pq").value,
+        ms: document.getElementById("ms").value
+    })
+});
+
+alert("Updated successfully!");
 }
 
 </script>
