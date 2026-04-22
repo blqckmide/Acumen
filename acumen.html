@@ -1,116 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <title>Acumen Mastery Series</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #0f172a;
-        color: white;
-        text-align: center;
-    }
-
-    header {
-        padding: 20px;
-        background: #111827;
-    }
-
-    header img {
-        width: 120px;
-        border-radius: 10px;
-    }
-
-    h1 {
-        margin: 10px 0 5px;
-        font-size: 26px;
-    }
-
-    p {
-        color: #cbd5e1;
-    }
-
-    .container {
-        padding: 20px;
-    }
-
-    .card {
-        background: #1e293b;
-        margin: 15px auto;
-        padding: 20px;
-        border-radius: 12px;
-        max-width: 500px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    }
-
-    button {
-        background: #22c55e;
-        border: none;
-        padding: 12px 20px;
-        color: white;
-        font-size: 16px;
-        border-radius: 8px;
-        cursor: pointer;
-        margin-top: 10px;
-    }
-
-    button:hover {
-        background: #16a34a;
-    }
-
-    footer {
-        margin-top: 30px;
-        padding: 15px;
-        font-size: 12px;
-        color: #94a3b8;
-    }
+body {margin:0;font-family:Arial;background:#0b1220;color:white;}
+header {padding:15px;background:#111827;display:flex;justify-content:space-between;}
+.container {padding:20px;max-width:900px;margin:auto;}
+.card {background:#1f2937;padding:20px;border-radius:10px;margin-top:20px;}
+.btn {padding:10px 15px;background:#22c55e;color:white;border-radius:6px;text-decoration:none;display:inline-block;}
+.pay {background:#3b82f6;}
+.locked {opacity:0.4;}
 </style>
 </head>
 
 <body>
 
 <header>
-
-    <!-- ✅ LOGO EMBEDDED DIRECTLY (NO LINK NEEDED) -->
-    <img src="data:image/jpeg;base64,PASTE_BASE64_HERE" alt="Acumen Mastery Series Logo">
-
-    <h1>ACUMEN MASTERY SERIES</h1>
-    <p>Post-UTME Past Questions + Area of Concentration</p>
+<h3>ACUMEN MASTERY SERIES</h3>
 </header>
 
 <div class="container">
 
-    <div class="card">
-        <h2>📘 Full Access Pack</h2>
-        <p>
-            ✔ Past Questions<br>
-            ✔ Answers & Explanations<br>
-            ✔ Area of Concentration
-        </p>
+<div class="card">
+<h2>📦 Full Access Package</h2>
+<p>Past Questions + Mastery Series</p>
+<h3>₦1,500</h3>
 
-        <button onclick="buyPack()">Buy Full Pack</button>
-    </div>
+<button class="btn pay" onclick="pay()">Pay with Paystack</button>
+</div>
+
+<div class="card locked" id="content">
+<h2>📘 Past Questions</h2>
+<a id="pq" class="btn" target="_blank">Open PDF</a>
+
+<h2 style="margin-top:20px;">📚 Mastery Series</h2>
+<a id="ms" class="btn" target="_blank">Open PDF</a>
+</div>
 
 </div>
 
-<footer>
-    © 2026 Acumen Mastery Series | All Rights Reserved
-</footer>
-
 <script>
-const PAYSTACK_FULL_PACK = "https://paystack.com/pay/your-full-pack-link";
 
-function buyPack() {
-    if (PAYSTACK_FULL_PACK.includes("your-full-pack-link")) {
-        alert("Add Paystack link first");
-    } else {
-        window.location.href = PAYSTACK_FULL_PACK;
-    }
+// LOAD SAVED FILES
+document.getElementById("pq").href = localStorage.getItem("pq") || "#";
+document.getElementById("ms").href = localStorage.getItem("ms") || "#";
+
+// PAYSTACK PAYMENT
+function pay() {
+    let handler = PaystackPop.setup({
+        key: "YOUR_PUBLIC_KEY",
+        email: "student@email.com",
+        amount: 150000,
+        currency: "NGN",
+
+        callback: function(response) {
+
+            // VERIFY PAYMENT WITH BACKEND
+            fetch("http://localhost:3000/verify/" + response.reference)
+            .then(res => res.json())
+            .then(data => {
+
+                if(data.success) {
+                    localStorage.setItem("paid", "true");
+                    document.getElementById("content").style.opacity = "1";
+                    alert("Payment successful! Access unlocked.");
+                } else {
+                    alert("Payment not verified.");
+                }
+
+            });
+
+        }
+    });
+
+    handler.openIframe();
 }
+
+// AUTO UNLOCK IF PAID
+if(localStorage.getItem("paid") === "true") {
+    document.getElementById("content").style.opacity = "1";
+}
+
 </script>
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
 
 </body>
 </html>
