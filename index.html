@@ -5,120 +5,163 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{margin:0;font-family:Arial;background:#0b1220;color:white;}
-header{padding:15px;background:#111827;text-align:center;}
-.container{padding:20px;}
-.card{background:#1f2937;padding:20px;border-radius:10px;margin-top:20px;}
-.btn{padding:12px;background:#22c55e;color:white;border:none;border-radius:6px;display:inline-block;text-decoration:none;}
-.lock{opacity:0.4;}
+body{
+margin:0;
+font-family:Arial;
+background:#0b1220;
+color:white;
+}
+
+header{
+background:#111827;
+padding:15px;
+text-align:center;
+font-weight:bold;
+}
+
+.container{
+padding:20px;
+max-width:900px;
+margin:auto;
+}
+
+.card{
+background:#1f2937;
+padding:20px;
+border-radius:10px;
+margin-top:20px;
+}
+
+.btn{
+padding:12px 15px;
+background:#22c55e;
+border:none;
+color:white;
+border-radius:6px;
+text-decoration:none;
+display:inline-block;
+cursor:pointer;
+}
+
+.pay{
+background:#3b82f6;
+}
+
+.lock{
+opacity:0.4;
+}
+
 </style>
 </head>
 
 <body>
 
 <header>
-<h2>ACUMEN MASTERY SERIES</h2>
+ACUMEN MASTERY SERIES
 </header>
 
 <div class="container">
 
 <div class="card">
-<h3>📦 Full Access Package</h3>
+<h2>📦 Full Access Package</h2>
 <p>Past Questions + Mastery Series</p>
 <h2>₦1000</h2>
 
-<button class="btn" onclick="pay()">Pay & Unlock</button>
+<button class="btn pay" onclick="pay()">Pay & Unlock</button>
 </div>
 
 <div class="card lock" id="content">
+
 <h3>📘 Past Questions</h3>
 <a id="pq" class="btn" target="_blank">Open PDF</a>
 
 <h3 style="margin-top:20px;">📚 Mastery Series</h3>
 <a id="ms" class="btn" target="_blank">Open PDF</a>
-</div>
 
 </div>
 
+</div>
+
+<!-- PAYSTACK -->
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
 <script>
+// ===============================
+// 🔥 FIREBASE CONFIG (YOUR DATA)
+// ===============================
+const firebaseConfig = {
+  apiKey: "AIzaSyB8Lgw7WzFuCBw5OaYTQebQ8I4JgjuohFU",
+  authDomain: "medsphere-c794d.firebaseapp.com",
+  databaseURL: "https://medsphere-c794d-default-rtdb.firebaseio.com",
+  projectId: "medsphere-c794d",
+  storageBucket: "medsphere-c794d.appspot.com",
+  messagingSenderId: "962864542783",
+  appId: "1:962864542783:web:e154c4ebdff6cd91fc348a",
+  measurementId: "G-WM5T4589YH"
+};
 
-// Firebase config (YOU WILL FILL THIS)
-const firebaseURL = "https://YOUR-FIREBASE-PROJECT.firebaseio.com/files.json";
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyB8Lgw7WzFuCBw5OaYTQebQ8I4JgjuohFU",
-    authDomain: "medsphere-c794d.firebaseapp.com",
-    databaseURL: "https://medsphere-c794d-default-rtdb.firebaseio.com",
-    projectId: "medsphere-c794d",
-    storageBucket: "medsphere-c794d.firebasestorage.app",
-    messagingSenderId: "962864542783",
-    appId: "1:962864542783:web:e154c4ebdff6cd91fc348a",
-    measurementId: "G-WM5T4589YH"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-
-// LOAD FILES FROM FIREBASE
+// ===============================
+// 📁 LOAD PDF LINKS FROM FIREBASE
+// ===============================
 async function loadFiles(){
-    let res = await fetch(firebaseURL);
+    let res = await fetch(firebaseConfig.databaseURL + "/files.json");
     let data = await res.json();
 
-    document.getElementById("pq").href = data.pq;
-    document.getElementById("ms").href = data.ms;
+    if(data){
+        document.getElementById("pq").href = data.pq || "#";
+        document.getElementById("ms").href = data.ms || "#";
+    }
 }
-
 loadFiles();
 
-// PAYSTACK PAYMENT
+// ===============================
+// 💳 PAYSTACK PAYMENT (₦1000)
+// ===============================
 function pay(){
-    let handler = PaystackPop.setup({
-        key: "YOUR_PUBLIC_KEY",
-        email: "student@gmail.com",
-        amount: 100000,
-        currency: "NGN",
 
-        callback: function(response){
+let handler = PaystackPop.setup({
+    key: "pk_test_4ff51d096c724a616f90e1c8174a35cfead0aa72" // 🔴 replace this
+    email: "student@email.com",
+    amount: 100000, // ₦1000 in kobo
+    currency: "NGN",
 
-            // VERIFY VIA FIREBASE (simple unlock flag)
-            fetch("https://YOUR-FIREBASE-PROJECT.firebaseio.com/users.json", {
-                method:"PATCH",
-                body: JSON.stringify({
-                    paid:true
-                })
-            });
+    callback: function(response){
 
-            alert("Payment successful!");
-            document.getElementById("content").style.opacity="1";
-        }
-    });
+        // 🔓 SAVE PAYMENT STATUS
+        fetch(firebaseConfig.databaseURL + "/users.json", {
+            method: "PATCH",
+            body: JSON.stringify({
+                paid: true
+            })
+        });
 
-    handler.openIframe();
+        alert("Payment successful!");
+        document.getElementById("content").style.opacity = "1";
+    },
+
+    onClose: function(){
+        alert("Payment cancelled");
+    }
+
+});
+
+handler.openIframe();
+
 }
 
-// AUTO CHECK ACCESS
-async function checkAccess(){
-    let res = await fetch("https://YOUR-FIREBASE-PROJECT.firebaseio.com/users.json");
+// ===============================
+// 🔓 CHECK IF USER PAID
+// ===============================
+async function check(){
+    let res = await fetch(firebaseConfig.databaseURL + "/users.json");
     let data = await res.json();
 
     if(data && data.paid){
-        document.getElementById("content").style.opacity="1";
+        document.getElementById("content").style.opacity = "1";
     }
 }
 
-checkAccess();
+check();
 
 </script>
 
