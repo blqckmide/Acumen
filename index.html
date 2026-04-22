@@ -34,7 +34,7 @@ margin-top:20px;
 
 .btn{
 padding:12px 15px;
-background:#22c55e;
+background:#3b82f6;
 border:none;
 color:white;
 border-radius:6px;
@@ -44,11 +44,12 @@ cursor:pointer;
 }
 
 .pay{
-background:#3b82f6;
+background:#22c55e;
 }
 
-.lock{
-opacity:0.4;
+#access{
+display:none;
+margin-top:20px;
 }
 </style>
 </head>
@@ -66,16 +67,20 @@ ACUMEN MASTERY SERIES
 <p>Past Questions + Mastery Series</p>
 <h2>₦1000</h2>
 
-<button class="btn pay" onclick="pay()">Pay & Unlock</button>
+<button class="btn pay" onclick="pay()">Pay & Get Access</button>
 </div>
 
-<div class="card lock" id="content">
+<div class="card" id="access">
 
-<h3>📘 Past Questions</h3>
-<a id="pq" class="btn" target="_blank">Open PDF</a>
+<h3>✅ Payment Successful</h3>
+<p>You now have access to the materials.</p>
 
-<h3 style="margin-top:20px;">📚 Mastery Series</h3>
-<a id="ms" class="btn" target="_blank">Open PDF</a>
+<a class="btn"
+href="https://wa.me/2349015299491?text=Hi%20I%20just%20paid%20for%20Acumen%20Mastery%20Series%20(₦1000)%20please%20send%20my%20access"
+target="_blank">
+
+📲 Get Access on WhatsApp
+</a>
 
 </div>
 
@@ -85,21 +90,6 @@ ACUMEN MASTERY SERIES
 
 <script>
 
-const dbURL = "https://medsphere-c794d-default-rtdb.firebaseio.com";
-
-// LOAD FILES
-async function loadFiles(){
-    let res = await fetch(dbURL + "/files.json");
-    let data = await res.json();
-
-    if(data){
-        document.getElementById("pq").href = data.pq || "#";
-        document.getElementById("ms").href = data.ms || "#";
-    }
-}
-loadFiles();
-
-// PAYSTACK PAYMENT (FIXED)
 function pay(){
 
 let handler = PaystackPop.setup({
@@ -110,33 +100,19 @@ let handler = PaystackPop.setup({
 
     callback: function(response){
 
-        // SAVE PAYMENT STATUS
-        fetch(dbURL + "/users.json", {
-            method: "PATCH",
-            body: JSON.stringify({
-                paid: true
-            })
-        });
+        document.getElementById("access").style.display = "block";
 
-        alert("Payment successful!");
-        document.getElementById("content").style.opacity = "1";
+        alert("Payment successful! Click WhatsApp to get access.");
+    },
+
+    onClose: function(){
+        alert("Payment cancelled");
     }
+
 });
 
 handler.openIframe();
 }
-
-// CHECK PAYMENT STATUS
-async function check(){
-    let res = await fetch(dbURL + "/users.json");
-    let data = await res.json();
-
-    if(data && data.paid){
-        document.getElementById("content").style.opacity = "1";
-    }
-}
-
-check();
 
 </script>
 
