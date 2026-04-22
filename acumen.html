@@ -5,37 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body {margin:0;font-family:Arial;background:#0b1220;color:white;}
-header {padding:15px;background:#111827;display:flex;justify-content:space-between;}
-.container {padding:20px;max-width:900px;margin:auto;}
-.card {background:#1f2937;padding:20px;border-radius:10px;margin-top:20px;}
-.btn {padding:10px 15px;background:#22c55e;color:white;border-radius:6px;text-decoration:none;display:inline-block;}
-.pay {background:#3b82f6;}
-.locked {opacity:0.4;}
+body{margin:0;font-family:Arial;background:#0b1220;color:white;}
+header{padding:15px;background:#111827;text-align:center;}
+.container{padding:20px;}
+.card{background:#1f2937;padding:20px;border-radius:10px;margin-top:20px;}
+.btn{padding:12px;background:#22c55e;color:white;border:none;border-radius:6px;display:inline-block;text-decoration:none;}
+.lock{opacity:0.4;}
 </style>
 </head>
 
 <body>
 
 <header>
-<h3>ACUMEN MASTERY SERIES</h3>
+<h2>ACUMEN MASTERY SERIES</h2>
 </header>
 
 <div class="container">
 
 <div class="card">
-<h2>📦 Full Access Package</h2>
+<h3>📦 Full Access</h3>
 <p>Past Questions + Mastery Series</p>
-<h3>₦1,500</h3>
+<h2>₦1,500</h2>
 
-<button class="btn pay" onclick="pay()">Pay with Paystack</button>
+<button class="btn" onclick="pay()">Pay with Paystack</button>
 </div>
 
-<div class="card locked" id="content">
-<h2>📘 Past Questions</h2>
+<div class="card lock" id="content">
+<h3>📘 Past Questions</h3>
 <a id="pq" class="btn" target="_blank">Open PDF</a>
 
-<h2 style="margin-top:20px;">📚 Mastery Series</h2>
+<h3 style="margin-top:20px;">📚 Mastery Series</h3>
 <a id="ms" class="btn" target="_blank">Open PDF</a>
 </div>
 
@@ -43,31 +42,35 @@ header {padding:15px;background:#111827;display:flex;justify-content:space-betwe
 
 <script>
 
-// LOAD SAVED FILES
+// LOAD FILES FROM ADMIN (LOCAL STORAGE)
 document.getElementById("pq").href = localStorage.getItem("pq") || "#";
 document.getElementById("ms").href = localStorage.getItem("ms") || "#";
 
-// PAYSTACK PAYMENT
-function pay() {
+// PAYSTACK PAYMENT (NO BACKEND)
+function pay(){
     let handler = PaystackPop.setup({
         key: "YOUR_PUBLIC_KEY",
         email: "student@email.com",
         amount: 150000,
         currency: "NGN",
 
-        callback: function(response) {
+        callback: function(response){
 
-            // VERIFY PAYMENT WITH BACKEND
-            fetch("http://localhost:3000/verify/" + response.reference)
+            // VERIFY PAYMENT DIRECTLY
+            fetch("https://api.paystack.co/transaction/verify/" + response.reference, {
+                headers: {
+                    Authorization: "Bearer YOUR_SECRET_KEY"
+                }
+            })
             .then(res => res.json())
             .then(data => {
 
-                if(data.success) {
-                    localStorage.setItem("paid", "true");
-                    document.getElementById("content").style.opacity = "1";
-                    alert("Payment successful! Access unlocked.");
+                if(data.data.status === "success"){
+                    localStorage.setItem("paid","true");
+                    document.getElementById("content").style.opacity="1";
+                    alert("Payment successful!");
                 } else {
-                    alert("Payment not verified.");
+                    alert("Payment failed");
                 }
 
             });
@@ -78,9 +81,9 @@ function pay() {
     handler.openIframe();
 }
 
-// AUTO UNLOCK IF PAID
-if(localStorage.getItem("paid") === "true") {
-    document.getElementById("content").style.opacity = "1";
+// AUTO UNLOCK
+if(localStorage.getItem("paid")==="true"){
+    document.getElementById("content").style.opacity="1";
 }
 
 </script>
