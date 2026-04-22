@@ -50,7 +50,6 @@ background:#3b82f6;
 .lock{
 opacity:0.4;
 }
-
 </style>
 </head>
 
@@ -82,29 +81,15 @@ ACUMEN MASTERY SERIES
 
 </div>
 
-<!-- PAYSTACK -->
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
 <script>
-// ===============================
-// 🔥 FIREBASE CONFIG (YOUR DATA)
-// ===============================
-const firebaseConfig = {
-  apiKey: "AIzaSyB8Lgw7WzFuCBw5OaYTQebQ8I4JgjuohFU",
-  authDomain: "medsphere-c794d.firebaseapp.com",
-  databaseURL: "https://medsphere-c794d-default-rtdb.firebaseio.com",
-  projectId: "medsphere-c794d",
-  storageBucket: "medsphere-c794d.appspot.com",
-  messagingSenderId: "962864542783",
-  appId: "1:962864542783:web:e154c4ebdff6cd91fc348a",
-  measurementId: "G-WM5T4589YH"
-};
 
-// ===============================
-// 📁 LOAD PDF LINKS FROM FIREBASE
-// ===============================
+const dbURL = "https://medsphere-c794d-default-rtdb.firebaseio.com";
+
+// LOAD FILES
 async function loadFiles(){
-    let res = await fetch(firebaseConfig.databaseURL + "/files.json");
+    let res = await fetch(dbURL + "/files.json");
     let data = await res.json();
 
     if(data){
@@ -114,21 +99,19 @@ async function loadFiles(){
 }
 loadFiles();
 
-// ===============================
-// 💳 PAYSTACK PAYMENT (₦1000)
-// ===============================
+// PAYSTACK PAYMENT (FIXED)
 function pay(){
 
 let handler = PaystackPop.setup({
-    key: "pk_test_4ff51d096c724a616f90e1c8174a35cfead0aa72" // 🔴 replace this
+    key: "pk_test_4ff51d096c724a616f90e1c8174a35cfead0aa72",
     email: "student@email.com",
-    amount: 100000, // ₦1000 in kobo
+    amount: 100000,
     currency: "NGN",
 
     callback: function(response){
 
-        // 🔓 SAVE PAYMENT STATUS
-        fetch(firebaseConfig.databaseURL + "/users.json", {
+        // SAVE PAYMENT STATUS
+        fetch(dbURL + "/users.json", {
             method: "PATCH",
             body: JSON.stringify({
                 paid: true
@@ -137,23 +120,15 @@ let handler = PaystackPop.setup({
 
         alert("Payment successful!");
         document.getElementById("content").style.opacity = "1";
-    },
-
-    onClose: function(){
-        alert("Payment cancelled");
     }
-
 });
 
 handler.openIframe();
-
 }
 
-// ===============================
-// 🔓 CHECK IF USER PAID
-// ===============================
+// CHECK PAYMENT STATUS
 async function check(){
-    let res = await fetch(firebaseConfig.databaseURL + "/users.json");
+    let res = await fetch(dbURL + "/users.json");
     let data = await res.json();
 
     if(data && data.paid){
