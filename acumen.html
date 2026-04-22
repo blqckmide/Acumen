@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Acumen Mastery Series</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #0f172a;
+        color: white;
+        text-align: center;
+    }
+
+    header {
+        padding: 20px;
+        background: #111827;
+    }
+
+    header img {
+        width: 120px;
+        border-radius: 10px;
+    }
+
+    h1 {
+        margin: 10px 0 5px;
+        font-size: 26px;
+    }
+
+    p {
+        color: #cbd5e1;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    .card {
+        background: #1e293b;
+        margin: 15px auto;
+        padding: 20px;
+        border-radius: 12px;
+        max-width: 500px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    button {
+        background: #22c55e;
+        border: none;
+        padding: 12px 20px;
+        color: white;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        background: #16a34a;
+    }
+
+    footer {
+        margin-top: 30px;
+        padding: 15px;
+        font-size: 12px;
+        color: #94a3b8;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <!-- ✅ LOGO EMBEDDED DIRECTLY (NO LINK NEEDED) -->
+    <img src="data:image/jpeg;base64,PASTE_BASE64_HERE" alt="Acumen Mastery Series Logo">
+
+    <h1>ACUMEN MASTERY SERIES</h1>
+    <p>Post-UTME Past Questions + Area of Concentration</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>📘 Full Access Pack</h2>
+        <p>
+            ✔ Past Questions<br>
+            ✔ Answers & Explanations<br>
+            ✔ Area of Concentration
+        </p>
+
+        <button onclick="buyPack()">Buy Full Pack</button>
+    </div>
+
+</div>
+
+<footer>
+    © 2026 Acumen Mastery Series | All Rights Reserved
+</footer>
+
+<script>
+const PAYSTACK_FULL_PACK = "https://paystack.com/pay/your-full-pack-link";
+
+function buyPack() {
+    if (PAYSTACK_FULL_PACK.includes("your-full-pack-link")) {
+        alert("Add Paystack link first");
+    } else {
+        window.location.href = PAYSTACK_FULL_PACK;
+    }
+}
+</script>
+
+</body>
+</html>
