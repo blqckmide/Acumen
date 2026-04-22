@@ -23,11 +23,11 @@ header{padding:15px;background:#111827;text-align:center;}
 <div class="container">
 
 <div class="card">
-<h3>📦 Full Access</h3>
+<h3>📦 Full Access Package</h3>
 <p>Past Questions + Mastery Series</p>
-<h2>₦1,500</h2>
+<h2>₦1000</h2>
 
-<button class="btn" onclick="pay()">Pay with Paystack</button>
+<button class="btn" onclick="pay()">Pay & Unlock</button>
 </div>
 
 <div class="card lock" id="content">
@@ -40,55 +40,63 @@ header{padding:15px;background:#111827;text-align:center;}
 
 </div>
 
+<script src="https://js.paystack.co/v1/inline.js"></script>
+
 <script>
 
-// LOAD FILES FROM ADMIN (LOCAL STORAGE)
-document.getElementById("pq").href = localStorage.getItem("pq") || "#";
-document.getElementById("ms").href = localStorage.getItem("ms") || "#";
+// Firebase config (YOU WILL FILL THIS)
+const firebaseURL = "https://YOUR-FIREBASE-PROJECT.firebaseio.com/files.json";
 
-// PAYSTACK PAYMENT (NO BACKEND)
+// LOAD FILES FROM FIREBASE
+async function loadFiles(){
+    let res = await fetch(firebaseURL);
+    let data = await res.json();
+
+    document.getElementById("pq").href = data.pq;
+    document.getElementById("ms").href = data.ms;
+}
+
+loadFiles();
+
+// PAYSTACK PAYMENT
 function pay(){
     let handler = PaystackPop.setup({
         key: "YOUR_PUBLIC_KEY",
-        email: "student@email.com",
-        amount: 150000,
+        email: "student@gmail.com",
+        amount: 100000,
         currency: "NGN",
 
         callback: function(response){
 
-            // VERIFY PAYMENT DIRECTLY
-            fetch("https://api.paystack.co/transaction/verify/" + response.reference, {
-                headers: {
-                    Authorization: "Bearer YOUR_SECRET_KEY"
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-
-                if(data.data.status === "success"){
-                    localStorage.setItem("paid","true");
-                    document.getElementById("content").style.opacity="1";
-                    alert("Payment successful!");
-                } else {
-                    alert("Payment failed");
-                }
-
+            // VERIFY VIA FIREBASE (simple unlock flag)
+            fetch("https://YOUR-FIREBASE-PROJECT.firebaseio.com/users.json", {
+                method:"PATCH",
+                body: JSON.stringify({
+                    paid:true
+                })
             });
 
+            alert("Payment successful!");
+            document.getElementById("content").style.opacity="1";
         }
     });
 
     handler.openIframe();
 }
 
-// AUTO UNLOCK
-if(localStorage.getItem("paid")==="true"){
-    document.getElementById("content").style.opacity="1";
+// AUTO CHECK ACCESS
+async function checkAccess(){
+    let res = await fetch("https://YOUR-FIREBASE-PROJECT.firebaseio.com/users.json");
+    let data = await res.json();
+
+    if(data && data.paid){
+        document.getElementById("content").style.opacity="1";
+    }
 }
 
-</script>
+checkAccess();
 
-<script src="https://js.paystack.co/v1/inline.js"></script>
+</script>
 
 </body>
 </html>
