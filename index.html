@@ -17,6 +17,7 @@ background:#111827;
 padding:15px;
 text-align:center;
 font-weight:bold;
+font-size:18px;
 }
 
 .container{
@@ -50,6 +51,7 @@ background:#22c55e;
 #access{
 display:none;
 margin-top:20px;
+text-align:center;
 }
 </style>
 </head>
@@ -65,7 +67,7 @@ ACUMEN MASTERY SERIES
 <div class="card">
 <h2>📦 Full Access Package</h2>
 <p>Past Questions + Mastery Series</p>
-<h2>₦1000</h2>
+<h2>₦1050</h2>
 
 <button class="btn pay" onclick="pay()">Pay & Get Access</button>
 </div>
@@ -76,7 +78,7 @@ ACUMEN MASTERY SERIES
 <p>You now have access to the materials.</p>
 
 <a class="btn"
-href="https://wa.me/2349015299491?text=Hi%20I%20just%20paid%20for%20Acumen%20Mastery%20Series%20(₦1000)%20please%20send%20my%20access"
+id="whatsappLink"
 target="_blank">
 
 📲 Get Access on WhatsApp
@@ -86,21 +88,34 @@ target="_blank">
 
 </div>
 
+<!-- PAYSTACK -->
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
 <script>
 
 function pay(){
 
+let email = prompt("Enter your email:");
+if(!email){
+alert("Email is required");
+return;
+}
+
 let handler = PaystackPop.setup({
-    key: "pk_test_4ff51d096c724a616f90e1c8174a35cfead0aa72",
-    email: "student@email.com",
-    amount: 100000,
+    key: "pk_live_c16687bba93b123a458691548fee35c16c9636d6",
+    email: email,
+    amount: 105000, // ✅ ₦1050
     currency: "NGN",
 
     callback: function(response){
 
         document.getElementById("access").style.display = "block";
+
+        let message = "Hi, I just paid for Acumen Mastery Series (₦1050). Ref: " + response.reference;
+
+        let link = "https://wa.me/2349015299491?text=" + encodeURIComponent(message);
+
+        document.getElementById("whatsappLink").href = link;
 
         alert("Payment successful! Click WhatsApp to get access.");
     },
