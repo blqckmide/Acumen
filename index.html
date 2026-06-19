@@ -1,134 +1,561 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Acumen Mastery Series</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DROPly — Fast. Reliable. Easy.</title>
+<meta name="description" content="DROPly is campus logistics on demand — delivery, market runs, and errands, picked up and dropped off fast." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B1220'/%3E%3Cpath d='M32 14 L46 24 V42 L32 50 L18 42 V24 Z' fill='none' stroke='%23FF6A1A' stroke-width='3'/%3E%3Cpath d='M32 50 V30 M18 24 L32 30 L46 24' fill='none' stroke='%23FF6A1A' stroke-width='3'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-body{
-margin:0;
-font-family:Arial;
-background:#0b1220;
-color:white;
-}
+  :root{
+    --navy-900:#0a0f1c;
+    --navy-800:#10182b;
+    --navy-700:#1b2740;
+    --navy-600:#2a3654;
+    --orange-500:#ff6a1a;
+    --orange-400:#ff8c4d;
+    --orange-300:#ffb07a;
+    --ink-50:#f5f7fb;
+    --slate-300:#aab4cc;
+    --slate-400:#8b95ac;
+    --slate-500:#6b7794;
+    --max:1120px;
+    --pad:clamp(20px, 5vw, 64px);
+    --radius:18px;
+  }
 
-header{
-background:#111827;
-padding:15px;
-text-align:center;
-font-weight:bold;
-font-size:18px;
-}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--navy-900);
+    color:var(--ink-50);
+    font-family:'Inter',sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img,svg{display:block;}
+  a{color:inherit;text-decoration:none;}
+  h1,h2,h3{font-family:'Sora',sans-serif;letter-spacing:-0.01em;}
+  .mono{font-family:'JetBrains Mono',monospace;}
 
-.container{
-padding:20px;
-max-width:900px;
-margin:auto;
-}
+  .wrap{max-width:var(--max);margin:0 auto;padding-inline:var(--pad);}
 
-.card{
-background:#1f2937;
-padding:20px;
-border-radius:10px;
-margin-top:20px;
-}
+  /* ---------- live tracker bar (signature element) ---------- */
+  .tracker{
+    position:fixed;top:0;left:0;width:100%;height:44px;
+    background:rgba(10,15,28,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--navy-700);
+    z-index:100;
+    display:flex;align-items:center;
+  }
+  .tracker-inner{
+    width:100%;max-width:var(--max);margin:0 auto;padding-inline:var(--pad);
+    display:flex;align-items:center;gap:14px;
+  }
+  .tracker-dot{
+    width:7px;height:7px;border-radius:50%;background:var(--orange-500);
+    box-shadow:0 0 0 4px rgba(255,106,26,0.18);
+    flex-shrink:0;
+  }
+  .tracker-label{
+    font-size:11px;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--slate-300);white-space:nowrap;
+  }
+  .tracker-label span{color:var(--orange-400);}
+  .tracker-track{
+    flex:1;height:3px;background:var(--navy-700);border-radius:3px;overflow:hidden;
+  }
+  .tracker-fill{
+    height:100%;width:0%;background:linear-gradient(90deg,var(--orange-500),var(--orange-300));
+    border-radius:3px;transition:width 0.1s linear;
+  }
 
-.btn{
-padding:12px 15px;
-background:#3b82f6;
-border:none;
-color:white;
-border-radius:6px;
-text-decoration:none;
-display:inline-block;
-cursor:pointer;
-}
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;align-items:center;
+    padding-top:120px;padding-bottom:80px;
+    overflow:hidden;
+  }
+  .hero-glow{
+    position:absolute;inset:0;z-index:0;
+    background:
+      radial-gradient(circle at 18% 25%, rgba(255,106,26,0.16), transparent 42%),
+      radial-gradient(circle at 85% 10%, rgba(255,106,26,0.10), transparent 38%),
+      radial-gradient(circle at 70% 90%, rgba(255,106,26,0.08), transparent 40%);
+    animation:drift 16s ease-in-out infinite alternate;
+  }
+  @keyframes drift{
+    0%{transform:scale(1) translate(0,0);}
+    100%{transform:scale(1.08) translate(-2%, 2%);}
+  }
+  .hero-content{position:relative;z-index:2;max-width:680px;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;letter-spacing:0.16em;text-transform:uppercase;
+    color:var(--orange-300);
+    border:1px solid var(--navy-600);
+    background:rgba(255,106,26,0.06);
+    padding:7px 14px;border-radius:999px;
+    margin-bottom:24px;
+  }
+  .eyebrow::before{
+    content:"";width:6px;height:6px;border-radius:50%;background:var(--orange-500);
+    animation:pulseDot 2.2s ease-in-out infinite;
+  }
+  @keyframes pulseDot{
+    0%,100%{box-shadow:0 0 0 0 rgba(255,106,26,0.5);}
+    50%{box-shadow:0 0 0 5px rgba(255,106,26,0);}
+  }
+  .brand{
+    font-size:clamp(56px, 11vw, 104px);
+    font-weight:800;
+    line-height:0.95;
+    margin-bottom:14px;
+  }
+  .brand .accent{
+    background:linear-gradient(90deg, var(--orange-300), var(--orange-500), var(--orange-300));
+    background-size:200% auto;
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:transparent;
+    animation:shineText 3.4s linear infinite;
+  }
+  @keyframes shineText{ to{ background-position:200% 50%; } }
+  .motto{
+    font-size:clamp(15px, 2vw, 18px);
+    letter-spacing:0.06em;
+    color:var(--slate-300);
+    margin-bottom:22px;
+  }
+  .motto .sep{color:var(--orange-500);margin-inline:6px;}
+  .hero-desc{
+    font-size:clamp(17px, 2.4vw, 21px);
+    color:var(--ink-50);
+    max-width:480px;
+    margin-bottom:36px;
+    font-weight:500;
+  }
+  .hero-desc em{color:var(--slate-400);font-style:normal;font-weight:400;display:block;font-size:0.7em;margin-top:6px;}
 
-.pay{
-background:#22c55e;
-}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:'Sora',sans-serif;font-weight:700;font-size:16px;
+    padding:16px 28px;border-radius:14px;
+    background:var(--orange-500);color:#0a0f1c;
+    box-shadow:0 12px 30px -8px rgba(255,106,26,0.55);
+    transition:transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    border:none;cursor:pointer;
+  }
+  .btn:hover{transform:translateY(-3px);box-shadow:0 18px 36px -8px rgba(255,106,26,0.7);}
+  .btn:focus-visible{outline:2px solid var(--ink-50);outline-offset:3px;}
+  .btn:active{transform:translateY(-1px) scale(0.97);}
+  .btn svg{width:20px;height:20px;flex-shrink:0;}
+  .btn-ghost{
+    background:transparent;color:var(--ink-50);
+    border:1px solid var(--navy-600);box-shadow:none;
+  }
+  .btn-ghost:hover{border-color:var(--orange-400);background:rgba(255,106,26,0.06);}
 
-#access{
-display:none;
-margin-top:20px;
-text-align:center;
-}
+  .float-icon{
+    position:absolute;color:var(--orange-400);opacity:0.5;
+    animation:floaty 7s ease-in-out infinite;
+  }
+  .float-icon svg{width:100%;height:100%;}
+  @keyframes floaty{
+    0%,100%{transform:translateY(0) rotate(0deg);}
+    50%{transform:translateY(-16px) rotate(6deg);}
+  }
+  .fi-1{width:46px;height:46px;top:14%;right:12%;animation-delay:0s;}
+  .fi-2{width:30px;height:30px;top:62%;right:24%;animation-delay:1.4s;}
+  .fi-3{width:34px;height:34px;top:38%;right:4%;animation-delay:2.8s;opacity:0.3;}
+
+  .scroll-cue{
+    position:absolute;left:50%;bottom:28px;transform:translateX(-50%);z-index:2;
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    color:var(--slate-400);
+    animation:bounce 2.2s ease-in-out infinite;
+  }
+  .scroll-cue span{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;}
+  .scroll-cue svg{width:16px;height:16px;}
+  @keyframes bounce{
+    0%,100%{transform:translate(-50%,0);}
+    50%{transform:translate(-50%,8px);}
+  }
+
+  /* ---------- generic section ---------- */
+  .section{padding-block:clamp(64px, 10vw, 120px);}
+  .section-alt{background:var(--navy-800);border-top:1px solid var(--navy-700);border-bottom:1px solid var(--navy-700);}
+  .section-head{max-width:560px;margin-bottom:48px;}
+  .kicker{
+    font-size:12px;letter-spacing:0.16em;text-transform:uppercase;
+    color:var(--orange-400);margin-bottom:12px;display:block;
+  }
+  .section-title{font-size:clamp(28px, 4vw, 40px);font-weight:700;margin-bottom:12px;}
+  .section-sub{color:var(--slate-400);font-size:16px;max-width:480px;}
+
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease, transform 0.7s ease;}
+  .reveal.is-in{opacity:1;transform:translateY(0);}
+
+  /* ---------- services ---------- */
+  .service-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+  .service-card{
+    background:var(--navy-800);
+    border:1px solid var(--navy-700);
+    border-radius:var(--radius);
+    padding:28px;
+    transition:transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .service-card:hover{
+    transform:translateY(-6px);
+    border-color:rgba(255,106,26,0.4);
+    box-shadow:0 20px 40px -16px rgba(255,106,26,0.25);
+  }
+  .service-card:hover .service-icon{transform:rotate(-6deg) scale(1.08);}
+  .service-icon{
+    width:44px;height:44px;border-radius:12px;
+    background:rgba(255,106,26,0.12);color:var(--orange-400);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:18px;
+    transition:transform 0.35s ease;
+  }
+  .service-icon svg{width:22px;height:22px;}
+  .service-card h3{font-size:18px;margin-bottom:8px;}
+  .service-card p{color:var(--slate-400);font-size:14.5px;}
+
+  /* ---------- how it works ---------- */
+  .steps{display:flex;flex-direction:column;gap:0;position:relative;}
+  .step{
+    display:flex;gap:22px;padding-block:24px;position:relative;
+  }
+  .step:not(:last-child)::after{
+    content:"";position:absolute;left:23px;top:62px;bottom:-2px;
+    border-left:2px dashed var(--navy-600);
+  }
+  .step-num{
+    font-family:'JetBrains Mono',monospace;font-weight:600;font-size:14px;
+    width:48px;height:48px;border-radius:50%;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--navy-800);border:1px solid var(--navy-600);color:var(--orange-400);
+    position:relative;z-index:1;
+  }
+  .step-body h3{font-size:18px;margin-bottom:6px;}
+  .step-body p{color:var(--slate-400);font-size:15px;max-width:420px;}
+
+  /* ---------- trust ---------- */
+  .trust-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .trust-item{
+    display:flex;align-items:center;gap:14px;
+    padding:20px;border-radius:14px;
+    background:var(--navy-800);border:1px solid var(--navy-700);
+  }
+  .trust-item .tick{
+    width:32px;height:32px;border-radius:50%;flex-shrink:0;
+    background:rgba(255,106,26,0.14);color:var(--orange-400);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .trust-item .tick svg{width:16px;height:16px;}
+  .trust-item span{font-weight:600;font-size:14.5px;}
+
+  /* ---------- staggered reveal timing ---------- */
+  .service-grid .service-card:nth-child(1){transition-delay:0s;}
+  .service-grid .service-card:nth-child(2){transition-delay:0.08s;}
+  .service-grid .service-card:nth-child(3){transition-delay:0.16s;}
+  .service-grid .service-card:nth-child(4){transition-delay:0.24s;}
+  .trust-grid .trust-item:nth-child(1){transition-delay:0s;}
+  .trust-grid .trust-item:nth-child(2){transition-delay:0.08s;}
+  .trust-grid .trust-item:nth-child(3){transition-delay:0.16s;}
+  .trust-grid .trust-item:nth-child(4){transition-delay:0.24s;}
+  .steps .step:nth-child(1){transition-delay:0s;}
+  .steps .step:nth-child(2){transition-delay:0.12s;}
+  .steps .step:nth-child(3){transition-delay:0.24s;}
+
+  /* ---------- scroll to top ---------- */
+  .to-top{
+    position:fixed;right:20px;bottom:20px;width:48px;height:48px;
+    border-radius:50%;background:var(--orange-500);color:var(--navy-900);
+    display:flex;align-items:center;justify-content:center;
+    border:none;cursor:pointer;z-index:90;
+    box-shadow:0 12px 26px -8px rgba(255,106,26,0.55);
+    opacity:0;transform:translateY(14px) scale(0.9);pointer-events:none;
+    transition:opacity 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .to-top.is-visible{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+  .to-top:hover{box-shadow:0 16px 32px -8px rgba(255,106,26,0.7);transform:translateY(-3px) scale(1.04);}
+  .to-top:active{transform:translateY(-1px) scale(0.95);}
+  .to-top svg{width:20px;height:20px;}
+
+  /* ---------- footer ---------- */
+  footer{
+    padding-block:64px 40px;
+    border-top:1px solid var(--navy-700);
+    background:var(--navy-900);
+  }
+  .footer-top{
+    display:flex;flex-direction:column;gap:28px;
+    padding-bottom:36px;border-bottom:1px solid var(--navy-700);margin-bottom:24px;
+  }
+  .footer-brand{font-family:'Sora',sans-serif;font-weight:800;font-size:28px;}
+  .footer-brand .accent{color:var(--orange-500);}
+  .footer-motto{color:var(--slate-400);font-size:13px;letter-spacing:0.05em;}
+  .footer-bottom{
+    display:flex;justify-content:space-between;align-items:center;
+    flex-wrap:wrap;gap:12px;color:var(--slate-500);font-size:13px;
+  }
+
+  @media (min-width: 760px){
+    .service-grid{grid-template-columns:repeat(4,1fr);}
+    .trust-grid{grid-template-columns:repeat(4,1fr);}
+    .steps{flex-direction:row;}
+    .step{flex-direction:column;flex:1;padding-block:0;}
+    .step:not(:last-child)::after{
+      left:48px;top:23px;right:-24px;bottom:auto;height:0;
+      border-left:none;border-top:2px dashed var(--navy-600);
+    }
+    .footer-top{flex-direction:row;justify-content:space-between;align-items:flex-end;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important;}
+    html{scroll-behavior:auto;}
+  }
 </style>
 </head>
-
 <body>
 
-<header>
-ACUMEN MASTERY SERIES
-</header>
-
-<div class="container">
-
-<div class="card">
-<h2>📦 Full Access Package</h2>
-<p>Past Questions + Mastery Series</p>
-<h2>₦1050</h2>
-
-<button class="btn pay" onclick="pay()">Pay & Get Access</button>
+<div class="tracker">
+  <div class="tracker-inner">
+    <div class="tracker-dot"></div>
+    <div class="tracker-label mono">YOUR ORDER · <span id="stageLabel">Order placed</span></div>
+    <div class="tracker-track"><div class="tracker-fill" id="trackerFill"></div></div>
+  </div>
 </div>
 
-<div class="card" id="access">
+<section class="hero" id="hero" data-stage="Order placed">
+  <div class="hero-glow"></div>
 
-<h3>✅ Payment Successful</h3>
-<p>You now have access to the materials.</p>
+  <div class="float-icon fi-1" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="8" width="18" height="12" rx="1.5"/><path d="M3 8 L12 3 L21 8"/><path d="M12 3 V20"/></svg>
+  </div>
+  <div class="float-icon fi-2" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-5.5-7-11a7 7 0 1 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>
+  </div>
+  <div class="float-icon fi-3" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="8" width="18" height="12" rx="1.5"/><path d="M3 8 L12 3 L21 8"/><path d="M12 3 V20"/></svg>
+  </div>
 
-<a class="btn"
-id="whatsappLink"
-target="_blank">
+  <div class="wrap hero-content">
+    <span class="eyebrow">Campus logistics, on demand</span>
+    <h1 class="brand">DROP<span class="accent">ly</span></h1>
+    <p class="motto mono">FAST<span class="sep">·</span>RELIABLE<span class="sep">·</span>EASY</p>
+    <p class="hero-desc">We pick it. We drop it. Anywhere you need it.
+      <em>One message on WhatsApp is all it takes to get something moving across campus.</em>
+    </p>
+    <a class="btn" href="https://api.whatsapp.com/send?phone=2349015299491&amp;text=Hi%20DROPly%21%20I%27d%20love%20to%20" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.5 8.5 0 1 1-3.8-7.1"/><path d="M21 3v6h-6"/><circle cx="9" cy="11.5" r="1"/><circle cx="13" cy="11.5" r="1"/></svg>
+      Order on WhatsApp
+    </a>
+  </div>
 
-📲 Get Access on WhatsApp
-</a>
+  <div class="scroll-cue" aria-hidden="true">
+    <span class="mono">Scroll</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+</section>
 
-</div>
+<section class="section" id="services" data-stage="Rider assigned">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">What we move</span>
+      <h2 class="section-title">Whatever it is, we'll get it there.</h2>
+      <p class="section-sub">From a forgotten textbook to a full market list — DROPly handles the back-and-forth so you don't have to leave your room.</p>
+    </div>
 
-</div>
+    <div class="service-grid">
+      <div class="service-card reveal">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="8" width="18" height="12" rx="1.5"/><path d="M3 8 L12 3 L21 8"/><path d="M12 3 V20"/></svg>
+        </div>
+        <h3>Campus delivery</h3>
+        <p>Parcels, documents, and items moved hostel-to-hostel or department-to-department, fast.</p>
+      </div>
 
-<!-- PAYSTACK -->
-<script src="https://js.paystack.co/v1/inline.js"></script>
+      <div class="service-card reveal">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18l-1.5 9a2 2 0 0 1-2 1.7H6.5a2 2 0 0 1-2-1.7L3 6Z"/><path d="M8 6V4a2 2 0 1 1 4 0v2"/><path d="M12 6V4a2 2 0 1 1 4 0v2"/></svg>
+        </div>
+        <h3>Market shopping</h3>
+        <p>Send your list. We shop the market and deliver everything straight to your door.</p>
+      </div>
+
+      <div class="service-card reveal">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9V3h12v6"/><rect x="6" y="14" width="12" height="7"/><rect x="3" y="9" width="18" height="7" rx="1.2"/></svg>
+        </div>
+        <h3>Errands</h3>
+        <p>Printing, pickups, drop-offs, payments — the small jobs that eat up your afternoon.</p>
+      </div>
+
+      <div class="service-card reveal">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11h16l-1 6a2 2 0 0 1-2 1.7H7a2 2 0 0 1-2-1.7l-1-6Z"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>
+        </div>
+        <h3>Food &amp; items</h3>
+        <p>Hot food, cold drinks, last-minute essentials — delivered while they're still good.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt" id="how" data-stage="Picked up">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">How it works</span>
+      <h2 class="section-title">Three steps. No app to download.</h2>
+      <p class="section-sub">DROPly runs entirely on WhatsApp — quick to start, easy to track.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num mono">01</div>
+        <div class="step-body">
+          <h3>Message us</h3>
+          <p>Tap the WhatsApp button and tell us what you need moved or bought.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num mono">02</div>
+        <div class="step-body">
+          <h3>We confirm</h3>
+          <p>A rider is assigned and your request is confirmed in minutes, not hours.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num mono">03</div>
+        <div class="step-body">
+          <h3>We deliver</h3>
+          <p>We pick it up and drop it right at your door — fast and intact.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="trust" data-stage="On the way">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">Why students use DROPly</span>
+      <h2 class="section-title">Built for campus life.</h2>
+    </div>
+
+    <div class="trust-grid">
+      <div class="trust-item reveal">
+        <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg></div>
+        <span>Trusted by students</span>
+      </div>
+      <div class="trust-item reveal">
+        <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg></div>
+        <span>Fast response time</span>
+      </div>
+      <div class="trust-item reveal">
+        <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg></div>
+        <span>Affordable pricing</span>
+      </div>
+      <div class="trust-item reveal">
+        <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg></div>
+        <span>Campus-focused service</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="footer" data-stage="Delivered">
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">DROP<span class="accent">ly</span></div>
+        <p class="footer-motto mono">FAST · RELIABLE · EASY</p>
+      </div>
+      <a class="btn" href="https://api.whatsapp.com/send?phone=2349015299491&amp;text=Hi%20DROPly%21%20I%27d%20love%20to%20" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.5 8.5 0 1 1-3.8-7.1"/><path d="M21 3v6h-6"/><circle cx="9" cy="11.5" r="1"/><circle cx="13" cy="11.5" r="1"/></svg>
+        Order on WhatsApp
+      </a>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 DROPly. We pick it. We drop it.</span>
+      <span>Campus delivery, market runs &amp; errands.</span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>
+</button>
 
 <script>
+  // Scroll-reveal: elements animate up into place once visible
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting){
+        entry.target.classList.add('is-in');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => revealObserver.observe(el));
 
-function pay(){
+  // Live tracker bar: continuous scroll progress + discrete delivery-stage label
+  const fill = document.getElementById('trackerFill');
+  const stageLabel = document.getElementById('stageLabel');
+  const stageSections = document.querySelectorAll('[data-stage]');
 
-let email = prompt("Enter your email:");
-if(!email){
-alert("Email is required");
-return;
-}
+  function updateFill(){
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    fill.style.width = Math.min(100, Math.max(0, pct)) + '%';
+  }
+  window.addEventListener('scroll', updateFill, { passive: true });
+  updateFill();
 
-let handler = PaystackPop.setup({
-    key: "pk_live_c16687bba93b123a458691548fee35c16c9636d6",
-    email: email,
-    amount: 105000, // ✅ ₦1050
-    currency: "NGN",
-
-    callback: function(response){
-
-        document.getElementById("access").style.display = "block";
-
-        let message = "Hi, I just paid for Acumen Mastery Series (₦1050). Ref: " + response.reference;
-
-        let link = "https://wa.me/2349015299491?text=" + encodeURIComponent(message);
-
-        document.getElementById("whatsappLink").href = link;
-
-        alert("Payment successful! Click WhatsApp to get access.");
-    },
-
-    onClose: function(){
-        alert("Payment cancelled");
+  // Scroll-to-top button: appears once you've scrolled past the hero
+  const toTop = document.getElementById('toTop');
+  function updateToTop(){
+    if (window.scrollY > window.innerHeight * 0.6){
+      toTop.classList.add('is-visible');
+    } else {
+      toTop.classList.remove('is-visible');
     }
+  }
+  window.addEventListener('scroll', updateToTop, { passive: true });
+  updateToTop();
+  toTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
-});
+  // Scroll-down cue: clicking it jumps to the services section
+  const scrollCue = document.querySelector('.scroll-cue');
+  if (scrollCue){
+    scrollCue.style.cursor = 'pointer';
+    scrollCue.addEventListener('click', () => {
+      document.getElementById('services').scrollIntoView({ behavior: 'smooth' });
+    });
+  }
 
-handler.openIframe();
-}
-
+  const stageObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting){
+        stageLabel.textContent = entry.target.dataset.stage;
+      }
+    });
+  }, { threshold: 0.5 });
+  stageSections.forEach(el => stageObserver.observe(el));
 </script>
 
 </body>
